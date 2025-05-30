@@ -1,7 +1,7 @@
 ﻿#region AlphabetDeclaration
 NumberChecker noChecker = new(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
-OperatorChecker opChecker = new(['+', '-', '*', '/', '=', '<', '>', '%'], ["==", "+=", "-=", "**", "<=", ">=", "=", "+", "++", "-", "*", "/", "%"]);
-GroupChecker groupChecker = new(['(', ')', '[', ']', '{', '}']);
+OperatorChecker opChecker = new(['+', '-', '*', '/', '=', '<', '>', '%', '|', '&'], ["||", "&&","==", "+=", "-=", "**", "<=", ">=", "->", "+", "++", "-", "<", ">", "*", "/", "%"]);
+GroupChecker groupChecker = new(['(', ')', '[', ']']);
 EndInstructionChecker endInstructionChecker = new('\n');
 WhiteSpaceChecker whiteSpaceChecker = new();
 IdChecker idChecker = new(["if", "else"]);
@@ -10,7 +10,7 @@ IdChecker idChecker = new(["if", "else"]);
 Lexer lexer = new([noChecker, opChecker, groupChecker, whiteSpaceChecker, endInstructionChecker, idChecker]);
 
 
-string code = $"true == false";
+string code = $" true && (45 < 200 || 62 > 20)";
 
 lexer.LoadCode(code + " ");
 
@@ -19,6 +19,11 @@ lexer.LoadCode(code + " ");
 #region Non-Terminals
 GrammarSymbol Main = new("Main", null);
 GrammarSymbol I = new("Instruction", null);
+
+GrammarSymbol O = new("O", null);
+GrammarSymbol Z = new("Z", null);
+GrammarSymbol C = new("C", null);
+GrammarSymbol V = new("V", null);
 
 GrammarSymbol B = new("B", null);
 GrammarSymbol N = new("N", null);
@@ -44,35 +49,45 @@ GrammarSymbol epsilon = new("/e", new(TokenType.epsilon, "epsilon", 0, 0));
 GrammarSymbol id = new("id", new(TokenType.id, "id", 0, 0));
 GrammarSymbol number = new("number", new(TokenType.number, "number", 0, 0));
 GrammarSymbol keyword = new("key", new(TokenType.keyword, "key", 0, 0));
+GrammarSymbol and = new("&&", new(TokenType.op, "&&", 0, 0));
+GrammarSymbol or = new("||", new(TokenType.op, "||", 0, 0));
+
 GrammarSymbol boolean = new("bool", new(TokenType.boolean, "bool", 0, 0));
 GrammarSymbol equal = new("==", new(TokenType.op, "==", 0, 0));
 GrammarSymbol lesser = new("<", new(TokenType.op, ">", 0, 0));
 GrammarSymbol bigger = new(">", new(TokenType.op, "<", 0, 0));
 GrammarSymbol endLine = new($"{'\n'}", new(TokenType.op, $"{'\n'}", 0, 0));
-GrammarSymbol assign = new("=", new(TokenType.op, "=", 0, 0));
+GrammarSymbol assign = new("->", new(TokenType.op, "->", 0, 0));
 
 
 #endregion
 #region Productions
 
-Production Inst = new(I, [[id, assign, B, endLine], [id, assign, E, endLine], [epsilon]]); /// corregir, convertir a LL(1)
+Production Asign = new(I, [[id, assign, B, endLine], [id, assign, E, endLine], [epsilon]]); /// corregir, convertir a LL(1)
+
+
+Production OrComp = new(O, [[C, Z]]);
+Production ZOrComp = new(Z, [[or, C, Z], [epsilon]]);
+Production AndComp = new(C, [[B, V]]);
+Production VAndComp = new(V, [[and, B, V], [epsilon]]);
+
 Production Bool = new(B, [[E, N]]);
-Production NBool = new(N, [[equal, E, N], [epsilon]]); 
+Production NBool = new(N, [[equal, E, N], [bigger, E, N], [lesser, E, N], [epsilon]]); 
 Production EA = new(E, [[T, X]]);
 Production Term = new(T, [[F, Y]]);
 Production XTerm = new(X, [[sum, T, X], [diff, T, X], [epsilon]]);
 Production Factor = new(F, [[P, M]]);
 Production YFactor = new(Y, [[mult, F, Y], [div, F, Y], [epsilon]]);
-Production Power = new(P, [[groupOpn, E, groupCls], [number], [id], [boolean]]);
+Production Power = new(P, [[groupOpn, O, groupCls], [number], [id], [boolean]]);
 Production MPower = new(M, [[pow, P, M], [epsilon]]);
 #endregion
 
-EAGrammar grammar = new([Bool, NBool, EA, Term, XTerm, Factor, YFactor, Power, MPower]);
+EAGrammar grammar = new([OrComp, ZOrComp, AndComp, VAndComp,Bool, NBool, EA, Term, XTerm, Factor, YFactor, Power, MPower]);
 #endregion
 
 Parser parser = new(grammar, lexer);
 
-AST program = parser.Parse(B);
+AST program = parser.Parse(O);
 
 program.Print();
 
