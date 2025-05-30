@@ -5,6 +5,7 @@ public enum TokenType
     group,
     exclude,
     id,
+    boolean,
     keyword,
     error,
     end,

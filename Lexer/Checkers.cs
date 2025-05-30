@@ -152,6 +152,7 @@ public class IdChecker : Checker
         }
 
         if (keywords.Contains(chain)) type = TokenType.keyword;
+        else if (chain == "true" || chain == "false") type = TokenType.boolean;
         else type = TokenType.id;
 
         return true;

@@ -30,7 +30,7 @@ public class AST(List<AST> children, GrammarSymbol symbol)
         {
             if (child.symbol.token != null)
             {
-                if (child.symbol.token.type == TokenType.group) child.symbol.name = "delete";
+                if (child.symbol.token.type == TokenType.group || child.symbol.token.type == TokenType.end) child.symbol.name = "delete";
 
                 if (derivationNode.symbol.token == null && child.symbol.token.type == TokenType.op)
                 {

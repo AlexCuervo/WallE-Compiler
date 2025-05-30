@@ -7,7 +7,7 @@ public class EAGrammar(List<Production> productions) : IGrammar
     {
         List<GrammarSymbol> first = [];
 
-        if (symbol.token != null) //if its not a terminal
+        if (symbol.token != null) //if it is a terminal
         {
             first.Add(symbol);
             return first;

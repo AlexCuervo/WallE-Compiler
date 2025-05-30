@@ -2,15 +2,15 @@
 NumberChecker noChecker = new(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
 OperatorChecker opChecker = new(['+', '-', '*', '/', '=', '<', '>', '%'], ["==", "+=", "-=", "**", "<=", ">=", "=", "+", "++", "-", "*", "/", "%"]);
 GroupChecker groupChecker = new(['(', ')', '[', ']', '{', '}']);
-EndInstructionChecker endInstructionChecker = new(';');
+EndInstructionChecker endInstructionChecker = new('\n');
 WhiteSpaceChecker whiteSpaceChecker = new();
-IdChecker idChecker = new(["if", "else", "true", "false"]);
+IdChecker idChecker = new(["if", "else"]);
 #endregion 
 
 Lexer lexer = new([noChecker, opChecker, groupChecker, whiteSpaceChecker, endInstructionChecker, idChecker]);
 
 
-string code = $"25000 / (45 * 3 + 15)";
+string code = $"true == false";
 
 lexer.LoadCode(code + " ");
 
@@ -20,7 +20,8 @@ lexer.LoadCode(code + " ");
 GrammarSymbol Main = new("Main", null);
 GrammarSymbol I = new("Instruction", null);
 
-GrammarSymbol B = new("Bool", null);
+GrammarSymbol B = new("B", null);
+GrammarSymbol N = new("N", null);
 
 GrammarSymbol E = new("E", null);
 GrammarSymbol T = new("T", null);
@@ -43,24 +44,35 @@ GrammarSymbol epsilon = new("/e", new(TokenType.epsilon, "epsilon", 0, 0));
 GrammarSymbol id = new("id", new(TokenType.id, "id", 0, 0));
 GrammarSymbol number = new("number", new(TokenType.number, "number", 0, 0));
 GrammarSymbol keyword = new("key", new(TokenType.keyword, "key", 0, 0));
+GrammarSymbol boolean = new("bool", new(TokenType.boolean, "bool", 0, 0));
 GrammarSymbol equal = new("==", new(TokenType.op, "==", 0, 0));
+GrammarSymbol lesser = new("<", new(TokenType.op, ">", 0, 0));
+GrammarSymbol bigger = new(">", new(TokenType.op, "<", 0, 0));
+GrammarSymbol endLine = new($"{'\n'}", new(TokenType.op, $"{'\n'}", 0, 0));
+GrammarSymbol assign = new("=", new(TokenType.op, "=", 0, 0));
+
+
 #endregion
 #region Productions
+
+Production Inst = new(I, [[id, assign, B, endLine], [id, assign, E, endLine], [epsilon]]); /// corregir, convertir a LL(1)
+Production Bool = new(B, [[E, N]]);
+Production NBool = new(N, [[equal, E, N], [epsilon]]); 
 Production EA = new(E, [[T, X]]);
 Production Term = new(T, [[F, Y]]);
 Production XTerm = new(X, [[sum, T, X], [diff, T, X], [epsilon]]);
 Production Factor = new(F, [[P, M]]);
 Production YFactor = new(Y, [[mult, F, Y], [div, F, Y], [epsilon]]);
-Production Power = new(P, [[groupOpn, E, groupCls], [number], [id]]);
+Production Power = new(P, [[groupOpn, E, groupCls], [number], [id], [boolean]]);
 Production MPower = new(M, [[pow, P, M], [epsilon]]);
 #endregion
 
-EAGrammar grammar = new([EA, Term, XTerm, Factor, YFactor, Power, MPower]);
+EAGrammar grammar = new([Bool, NBool, EA, Term, XTerm, Factor, YFactor, Power, MPower]);
 #endregion
 
 Parser parser = new(grammar, lexer);
 
-AST program = parser.Parse(E);
+AST program = parser.Parse(B);
 
 program.Print();
 

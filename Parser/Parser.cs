@@ -57,7 +57,8 @@ public class Parser
             }
         }
     }
-    void UpdateTerminal() {
+    void UpdateTerminal()
+    {
         try
         {
             currentToken = lexer.Tokens.First();
@@ -67,7 +68,26 @@ public class Parser
             isCodeRemaining = false;
         }
         currentTerminal = new(currentToken!.literal, currentToken);
-        if (currentToken.type == TokenType.number || currentToken.type == TokenType.id) currentTerminal.name = currentToken.type == TokenType.number ? "number" : "id";
+
+        switch (currentToken.type)
+        {
+
+            case TokenType.number:
+                currentTerminal.name = "number";
+                break;
+            case TokenType.id:
+                currentTerminal.name = "id";
+                break;
+            case TokenType.keyword:
+                currentTerminal.name = "key";
+                break;
+            case TokenType.boolean:
+                currentTerminal.name = "bool";
+                break;
+            default: break;
+        }
+
+        // if (currentToken.type == TokenType.number || currentToken.type == TokenType.id) currentTerminal.name = currentToken.type == TokenType.number ? "number" : "id";
     }
     public AST Parse(GrammarSymbol Expression)
     {
