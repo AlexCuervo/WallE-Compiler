@@ -12,3 +12,4 @@ C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0\refint\Compiler.dll
 C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0\Compiler.pdb
 C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0\Compiler.genruntimeconfig.cache
 C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0\ref\Compiler.dll
+C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0\Compiler.sourcelink.json

@@ -87,7 +87,6 @@ public class Parser
             default: break;
         }
 
-        // if (currentToken.type == TokenType.number || currentToken.type == TokenType.id) currentTerminal.name = currentToken.type == TokenType.number ? "number" : "id";
     }
     public AST Parse(GrammarSymbol Expression)
     {
