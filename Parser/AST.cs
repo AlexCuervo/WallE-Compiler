@@ -4,8 +4,6 @@ public class AST(List<AST> children, GrammarSymbol symbol)
     public GrammarSymbol symbol = symbol;
     bool changed = true;
 
-    // public void Execute();
-
     public void Optimize(AST derivationNode)
     {
         do
@@ -23,7 +21,7 @@ public class AST(List<AST> children, GrammarSymbol symbol)
         {
             derivationNode.symbol = new(derivationNode.children[0].symbol.name, derivationNode.children[0].symbol.token);
             derivationNode.children = derivationNode.children.Concat(derivationNode.children[0].children).ToList();
-            derivationNode.children[0].symbol.name = "delete"; 
+            derivationNode.children[0].symbol.name = "delete";
         }
 
         foreach (var child in derivationNode.children)
@@ -43,7 +41,7 @@ public class AST(List<AST> children, GrammarSymbol symbol)
             else
             {
                 if (child.children.Count == 0) child.symbol.name = "delete";
-                
+
             }
         }
         for (int i = derivationNode.children.Count - 1; i >= 0; i--)
@@ -55,11 +53,11 @@ public class AST(List<AST> children, GrammarSymbol symbol)
             }
         foreach (var child in derivationNode.children) OptimizeNode(child);
 
-        
+
     }
     public void Print()
     {
-        if (symbol.token != null) System.Console.WriteLine(symbol.token.literal);
+        if (symbol.token != null) System.Console.WriteLine(symbol.token.literal + "      " + symbol.token.row + "      " + symbol.token.column);
         else System.Console.WriteLine(symbol.name);
 
         foreach (var child in children) child.Print();
@@ -69,4 +67,7 @@ public class AST(List<AST> children, GrammarSymbol symbol)
     {
         children.Add(child);
     }
+
+    public void Execute(AST Node){}
 }
+

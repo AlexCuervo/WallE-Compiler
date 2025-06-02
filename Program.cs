@@ -1,16 +1,17 @@
 ﻿#region AlphabetDeclaration
+
 NumberChecker noChecker = new(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
-OperatorChecker opChecker = new(['+', '-', '*', '/', '=', '<', '>', '%', '|', '&'], ["||", "&&","==", "+=", "-=", "**", "<=", ">=", "->", "+", "++", "-", "<", ">", "*", "/", "%"]);
-GroupChecker groupChecker = new(['(', ')', '[', ']']);
+OperatorChecker opChecker = new(['+', '-', '*', '/', '=', '<', '>', '%', '|', '&', '!'], ["||", "&&","==", "!=", "+=", "-=", "**", "<=", ">=", "->", "+", "++", "-", "<", ">", "*", "/", "%"]);
+GroupChecker groupChecker = new(['(', ')', ',', '[', ']']);
 EndInstructionChecker endInstructionChecker = new('\n');
 WhiteSpaceChecker whiteSpaceChecker = new();
-IdChecker idChecker = new(["if", "else"]);
+IdChecker idChecker = new(["GoTo", "Spawn", "IsColor", "DrawCircle", "DrawSquare"]);
 #endregion 
 
 Lexer lexer = new([noChecker, opChecker, groupChecker, whiteSpaceChecker, endInstructionChecker, idChecker]);
 
 
-string code = $" (true && 45 <= 200 || 62 >= 20%10) + 4450 ** 5";
+string code = $"alelluya -> 456 != 54%1 ** 3";
 
 lexer.LoadCode(code + " ");
 
@@ -20,6 +21,12 @@ lexer.LoadCode(code + " ");
 GrammarSymbol Main = new("Main", null);
 GrammarSymbol I = new("Instruction", null);
 
+GrammarSymbol FC = new("FunctionCall", null);
+GrammarSymbol Param = new("FunctionCallParam", null);
+GrammarSymbol Params = new("FunctionCallParams", null);
+
+GrammarSymbol A = new("Assign", null);
+GrammarSymbol Q = new("Q", null);
 GrammarSymbol O = new("O", null);
 GrammarSymbol Z = new("Z", null);
 GrammarSymbol C = new("C", null);
@@ -52,40 +59,46 @@ GrammarSymbol and = new("&&", new(TokenType.op, "&&", 0, 0));
 GrammarSymbol or = new("||", new(TokenType.op, "||", 0, 0));
 GrammarSymbol boolean = new("bool", new(TokenType.boolean, "bool", 0, 0));
 GrammarSymbol equal = new("==", new(TokenType.op, "==", 0, 0));
-GrammarSymbol eqBig = new(">=", new(TokenType.op, "==", 0, 0));
-GrammarSymbol eqLess = new("<=", new(TokenType.op, "==", 0, 0));
+GrammarSymbol notEqual = new("!=", new(TokenType.op, "!=", 0, 0));
+GrammarSymbol eqBig = new(">=", new(TokenType.op, ">=", 0, 0));
+GrammarSymbol eqLess = new("<=", new(TokenType.op, "<=", 0, 0));
 GrammarSymbol lesser = new("<", new(TokenType.op, ">", 0, 0));
 GrammarSymbol bigger = new(">", new(TokenType.op, "<", 0, 0));
 GrammarSymbol endLine = new($"{'\n'}", new(TokenType.op, $"{'\n'}", 0, 0));
 GrammarSymbol assign = new("->", new(TokenType.op, "->", 0, 0));
+GrammarSymbol comma = new(",", new(TokenType.group, ",", 0, 0));
 
 
 #endregion
 #region Productions
 
-Production Asign = new(I, [[id, assign, C, endLine], [epsilon]]); /// corregir, convertir a LL(1)
 
+Production FunctionCall = new(FC, [[keyword, groupOpn, Param, groupCls]]); //error FIRST
+Production PFunctionCall = new(Param, [[C, Params], [epsilon]]); //error FIRST
+Production MoreParams = new(Params, [[comma, Param], [epsilon]]); //error hallando el FIRST
+Production Assign = new(A, [[id, Q]]);
+Production QAssign = new(Q, [[assign, C], [epsilon]]);
 Production AndComp = new(C, [[O, V]]);
 Production VAndComp = new(V, [[and, O, V], [epsilon]]);
 Production OrComp = new(O, [[B, Z]]);
 Production ZOrComp = new(Z, [[or, B, Z], [epsilon]]);
 Production Bool = new(B, [[E, N]]);
-Production NBool = new(N, [[equal, E, N], [bigger, E, N], [lesser, E, N], [eqBig, E, N], [eqLess, E, N], [epsilon]]); 
+Production NBool = new(N, [[equal, E, N], [notEqual, E, N], [bigger, E, N], [lesser, E, N], [eqBig, E, N], [eqLess, E, N], [epsilon]]); 
 Production EA = new(E, [[T, X]]);
 Production Term = new(T, [[F, Y]]);
 Production XTerm = new(X, [[sum, T, X], [diff, T, X], [epsilon]]);
 Production Factor = new(F, [[P, M]]);
 Production YFactor = new(Y, [[mult, F, Y], [div, F, Y], [mod, F, Y], [epsilon]]);
-Production Power = new(P, [[groupOpn, C, groupCls], [number], [id], [boolean]]);
+Production Power = new(P, [[groupOpn, C, groupCls], [number], [id], [boolean], [FC]]);
 Production MPower = new(M, [[pow, P, M], [epsilon]]);
 #endregion
 
-EAGrammar grammar = new([OrComp, ZOrComp, AndComp, VAndComp,Bool, NBool, EA, Term, XTerm, Factor, YFactor, Power, MPower]);
+EAGrammar grammar = new([Assign, QAssign, OrComp, ZOrComp, AndComp, VAndComp,Bool, NBool, EA, Term, XTerm, Factor, YFactor, Power, MPower]);
 #endregion
 
 Parser parser = new(grammar, lexer);
 
-AST program = parser.Parse(C);
+AST program = parser.Parse(A);
 
 program.Print();
 
