@@ -54,7 +54,7 @@ public class Lexer(List<Checker> Checkers)
                         if (currentToken!.type == TokenType.end)
                         {
                             row++;
-                            column = 0;
+                            column = 1;
                         }
                         if (currentToken!.type != TokenType.exclude) yield return currentToken!;
                     }

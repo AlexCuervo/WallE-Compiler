@@ -38,9 +38,9 @@ public class Parser
                     {
                         foreach (var discard in production.GetDerivations)
                         {
-                            for (int i = 0; i < discard.Length; i++)
+                            foreach(var item in grammar.GetFIRST(discard[0]))
                             {
-                                if (discard[i].token != null && discard[i].name == element.name)
+                                if (item.name == element.name)
                                 {
                                     derivation = discard;
                                     break;
@@ -88,16 +88,16 @@ public class Parser
         }
 
     }
-    public AST Parse(GrammarSymbol Expression)
+    public DerivationTree Parse(GrammarSymbol Expression)
     {
-        AST program = new([], new(Expression.name, null));
+        DerivationTree program = new([], new(Expression.name, null));
         currentProduction = parsingTable[Expression, currentTerminal!.name];
 
 
 
         foreach (var symbol in currentProduction.GetDerivations[0])
         {
-            AST child = new([], new(symbol.name, symbol.token));
+            DerivationTree child = new([], new(symbol.name, symbol.token));
             if (symbol.token == null) child = Parse(symbol);
             else if (symbol.name == currentTerminal.name)
             {

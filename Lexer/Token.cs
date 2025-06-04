@@ -2,6 +2,9 @@ public enum TokenType
 {
     number,
     op,
+    assign,
+    functionCall,
+    param,
     group,
     exclude,
     id,
@@ -9,6 +12,8 @@ public enum TokenType
     keyword,
     error,
     end,
+    instructions,
+    program,
     epsilon
 }
 

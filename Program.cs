@@ -1,7 +1,7 @@
 ﻿#region AlphabetDeclaration
 
 NumberChecker noChecker = new(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
-OperatorChecker opChecker = new(['+', '-', '*', '/', '=', '<', '>', '%', '|', '&', '!'], ["||", "&&","==", "!=", "+=", "-=", "**", "<=", ">=", "->", "+", "++", "-", "<", ">", "*", "/", "%"]);
+OperatorChecker opChecker = new(['+', '-', '*', '/', '=', '<', '>', '%', '|', '&', '!'], ["||", "&&","==", "!=", "+=", "-=", "**", "<=", ">=", "+", "++", "-", "<", ">", "*", "/", "%"]);
 GroupChecker groupChecker = new(['(', ')', ',', '[', ']']);
 EndInstructionChecker endInstructionChecker = new('\n');
 WhiteSpaceChecker whiteSpaceChecker = new();
@@ -11,20 +11,20 @@ IdChecker idChecker = new(["GoTo", "Spawn", "IsColor", "DrawCircle", "DrawSquare
 Lexer lexer = new([noChecker, opChecker, groupChecker, whiteSpaceChecker, endInstructionChecker, idChecker]);
 
 
-string code = $"alelluya -> 456 != 54%1 ** 3";
+string code = $" alex -> Spawn(1,2,3) {'\n'} pakapaka {'\n'}";
 
 lexer.LoadCode(code + " ");
 
 #region GrammarDeclaration
 
 #region Non-Terminals
-GrammarSymbol Main = new("Main", null);
-GrammarSymbol I = new("Instruction", null);
 
+GrammarSymbol Program = new("Program", null);
+GrammarSymbol I = new("Instruction", null);
+GrammarSymbol MoreInst = new("MoreInstruction", null);
 GrammarSymbol FC = new("FunctionCall", null);
 GrammarSymbol Param = new("FunctionCallParam", null);
 GrammarSymbol Params = new("FunctionCallParams", null);
-
 GrammarSymbol A = new("Assign", null);
 GrammarSymbol Q = new("Q", null);
 GrammarSymbol O = new("O", null);
@@ -67,15 +67,15 @@ GrammarSymbol bigger = new(">", new(TokenType.op, "<", 0, 0));
 GrammarSymbol endLine = new($"{'\n'}", new(TokenType.op, $"{'\n'}", 0, 0));
 GrammarSymbol assign = new("->", new(TokenType.op, "->", 0, 0));
 GrammarSymbol comma = new(",", new(TokenType.group, ",", 0, 0));
-
-
 #endregion
+
 #region Productions
-
-
-Production FunctionCall = new(FC, [[keyword, groupOpn, Param, groupCls]]); //error FIRST
-Production PFunctionCall = new(Param, [[C, Params], [epsilon]]); //error FIRST
-Production MoreParams = new(Params, [[comma, Param], [epsilon]]); //error hallando el FIRST
+Production Main = new(Program, [[I, MoreInst]]);
+Production Instruction = new(I, [[FC, endLine], [A, endLine], [endLine]]);
+Production MoreInstructions = new(MoreInst, [[I, MoreInst], [epsilon]]);
+Production FunctionCall = new(FC, [[keyword, groupOpn, Param, groupCls]]);
+Production PFunctionCall = new(Param, [[C, Params],[epsilon]]);
+Production MoreParams = new(Params, [[comma, Param], [epsilon]]);
 Production Assign = new(A, [[id, Q]]);
 Production QAssign = new(Q, [[assign, C], [epsilon]]);
 Production AndComp = new(C, [[O, V]]);
@@ -93,12 +93,12 @@ Production Power = new(P, [[groupOpn, C, groupCls], [number], [id], [boolean], [
 Production MPower = new(M, [[pow, P, M], [epsilon]]);
 #endregion
 
-EAGrammar grammar = new([Assign, QAssign, OrComp, ZOrComp, AndComp, VAndComp,Bool, NBool, EA, Term, XTerm, Factor, YFactor, Power, MPower]);
+EAGrammar grammar = new([ Main, Instruction, MoreInstructions, FunctionCall, PFunctionCall, MoreParams , Assign, QAssign, AndComp, VAndComp, OrComp, ZOrComp, Bool, NBool, EA, Term, XTerm, Factor, YFactor, Power, MPower]);
 #endregion
 
 Parser parser = new(grammar, lexer);
 
-AST program = parser.Parse(A);
+DerivationTree program = parser.Parse(grammar.GetProductions[0].GetSymbol);
 
 program.Print();
 
@@ -106,6 +106,16 @@ System.Console.WriteLine();
 System.Console.WriteLine();
 System.Console.WriteLine();
 
-program.Optimize(program);
+program = program.Optimize(program);
 
 program.Print();
+
+System.Console.WriteLine();
+System.Console.WriteLine();
+System.Console.WriteLine();
+
+ASTBuilder.Init();
+
+var programAST = program.GetAST();
+
+programAST.Print();
