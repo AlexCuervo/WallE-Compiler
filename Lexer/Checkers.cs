@@ -156,6 +156,7 @@ public class IdChecker : Checker
         }
 
         if (keywords.Contains(chain)) type = TokenType.keyword;
+        else if (chain == "GoTo") type = TokenType.goTo;
         else if (chain == "true" || chain == "false") type = TokenType.boolean;
         else type = TokenType.id;
 
@@ -171,5 +172,30 @@ public class IdChecker : Checker
     public IdChecker(string[] keywords)
     {
         this.keywords = keywords;
+    }
+}
+
+public class TextChecker : Checker
+{
+    public override bool CanProceed(string chain)
+    {
+        if (chain.Length == 0) return false;
+        for (int i = 0; i < chain.Length; i++)
+        {
+            if (chain[i] != '"' && i == 0) return false;
+            else if (chain[i] == '"' && i != 0 && i != chain.Length - 1) return false;
+        }
+        return true;
+    }
+
+    public override bool Check(string chain)
+    {
+        if (chain[0] == '"' && chain[chain.Length - 1] == '"') return true;
+        else return false;
+    }
+
+    public TextChecker()
+    {
+        type = TokenType.text;
     }
 }

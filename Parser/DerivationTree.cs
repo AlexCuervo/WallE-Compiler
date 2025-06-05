@@ -27,7 +27,6 @@ public class DerivationTree(List<DerivationTree> children, GrammarSymbol symbol)
 
         return root;
     }
-
     DerivationTree ReRoot(DerivationTree node)
     {
         var newNode = new DerivationTree([], node.symbol);
@@ -63,7 +62,7 @@ public class DerivationTree(List<DerivationTree> children, GrammarSymbol symbol)
     {
         if (node.children.Count == 0)
             return node;
-        if (node.children.Count == 1 && node.symbol.token == null)
+        if (node.children.Count == 1 && node.symbol.token == null && node.symbol.name != "FunctionCall" && node.symbol.name != "FunctionCallParam")
         {
             changed = true;
             return OptimizeNode(node.children[0]);
@@ -82,10 +81,10 @@ public class DerivationTree(List<DerivationTree> children, GrammarSymbol symbol)
 
                 if (newChild.symbol.token!.type == TokenType.op || newChild.symbol.token!.type == TokenType.assign)
                 {
-                    if (node.symbol.token == null && node.symbol.name != "MoreInstruction")
+                    if (node.symbol.token == null && node.symbol.name != "MoreInstruction" && node.symbol.name != "Program"  && node.symbol.name != "FunctionCall" && node.symbol.name != "FunctionCallParam" && node.symbol.name != "FunctionCallGoTo")
                     {
                         newNode.symbol = new(child.symbol.name, child.symbol.token);
-                        newNode.children = newNode.children.Concat(child.children).ToList();
+                        newNode.children = [.. newNode.children, .. child.children];
                         changed = true;
                     }
                     else
@@ -109,13 +108,12 @@ public class DerivationTree(List<DerivationTree> children, GrammarSymbol symbol)
 
         return newNode;
     }
-
     public void Print()
     {
         if (symbol.token != null) System.Console.WriteLine(symbol.token.literal + "      " + symbol.token.row + "      " + symbol.token.column);
         else System.Console.WriteLine(symbol.name);
 
-        // System.Console.WriteLine(children.Count);
+        System.Console.WriteLine(children.Count);
 
         foreach (var child in children) child.Print();
     }
@@ -123,6 +121,5 @@ public class DerivationTree(List<DerivationTree> children, GrammarSymbol symbol)
     {
         children.Add(child);
     }
-    public void Execute(DerivationTree Node) { }
 }
 

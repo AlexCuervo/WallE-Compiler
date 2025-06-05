@@ -84,6 +84,9 @@ public class Parser
             case TokenType.boolean:
                 currentTerminal.name = "bool";
                 break;
+            case TokenType.text:
+                currentTerminal.name = "text";
+                break;
             default: break;
         }
 
@@ -91,7 +94,19 @@ public class Parser
     public DerivationTree Parse(GrammarSymbol Expression)
     {
         DerivationTree program = new([], new(Expression.name, null));
-        currentProduction = parsingTable[Expression, currentTerminal!.name];
+        try
+        {
+            currentProduction = parsingTable[Expression, currentTerminal!.name];
+        }
+        catch (KeyNotFoundException)
+        {
+            throw new Exception($"syntax error at ({currentToken!.row},{currentToken.column})");
+            // System.Console.WriteLine($"syntax error at ({currentToken!.row},{currentToken.column})");
+            // while (currentTerminal!.token!.type != TokenType.end)
+            // {
+            //     UpdateTerminal();
+            // }
+        }
 
 
 
@@ -99,9 +114,9 @@ public class Parser
         {
             DerivationTree child = new([], new(symbol.name, symbol.token));
             if (symbol.token == null) child = Parse(symbol);
-            else if (symbol.name == currentTerminal.name)
+            else if (symbol.name == currentTerminal!.name)
             {
-                if(child.symbol.token!.literal.Length != 0)child.symbol.token = new(currentTerminal.token!.type, currentTerminal.token.literal, currentTerminal.token.row, currentTerminal.token.column);
+                if (child.symbol.token!.literal.Length != 0) child.symbol.token = new(currentTerminal.token!.type, currentTerminal.token.literal, currentTerminal.token.row, currentTerminal.token.column);
                 UpdateTerminal();
             }
             else if (symbol.token.type == TokenType.epsilon) break;

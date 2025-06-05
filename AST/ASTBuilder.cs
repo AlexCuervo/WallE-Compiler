@@ -35,6 +35,11 @@ public static class ASTBuilder
             var value = node.symbol.token!.literal;
             return new Identifier(value);
         };
+        ASTBuilders[TokenType.text] = (DerivationTree node) =>
+        {
+            var value = node.symbol.token!.literal;
+            return new Text(value);
+        };
         ASTBuilders[TokenType.assign] = (DerivationTree node) =>
         {
             var children = node.GetChildren;
@@ -44,22 +49,49 @@ public static class ASTBuilder
         ASTBuilders[TokenType.functionCall] = (DerivationTree node) =>
         {
             var children = node.GetChildren;
-            return new FunctionCall(children[0].GetAST(), children[1].GetAST());
+            if (node.GetChildren.Count() == 1)
+                return new FunctionCall(children[0].GetAST(), null);
+            else 
+                return new FunctionCall(children[0].GetAST(), children[1].GetAST());
+        };
+
+        ASTBuilders[TokenType.goTo] = (DerivationTree node) =>
+        {
+            var children = node.GetChildren;
+            if (children.Count() == 2)
+                return new FunctionCallGoTo(children[0].GetAST(), children[1].GetAST(), null);
+            else if (children.Count() == 3)
+                return new FunctionCallGoTo(children[0].GetAST(), children[1].GetAST(), children[2].GetAST());
+            else throw new Exception();
         };
 
         ASTBuilders[TokenType.param] = (DerivationTree node) =>
         {
             var children = node.GetChildren;
-            return new Param(children[0].GetAST(), children[1].GetAST());
+            if(children.Count() != 1)
+                return new Param(children[0].GetAST(), children[1].GetAST());
+            else
+                return new Param(children[0].GetAST(), null);
+        };
+        ASTBuilders[TokenType.instructions] = (DerivationTree node) =>
+        {
+            var children = node.GetChildren;
+            return new Instructions(children[0].GetAST(), children[1].GetAST());
         };
     }
     public static Func<DerivationTree, AST> GetASTBuilder(DerivationTree node)
     {
         TokenType tokenType = new();
-        if (node.symbol.token == null)
+        if (node.symbol.token == null || node.symbol.token.type == TokenType.goTo)
         {
             switch (node.symbol.name)
             {
+                case "FunctionCallGoTo":
+                    tokenType = TokenType.goTo;
+                    break;
+                case "GoTo":
+                    tokenType = TokenType.keyword;
+                    break;
                 case "FunctionCall":
                     tokenType = TokenType.functionCall;
                     break;
@@ -69,8 +101,8 @@ public static class ASTBuilder
                 case "MoreInstruction":
                     tokenType = TokenType.instructions;
                     break;
-                case "Main":
-                    tokenType = TokenType.program;
+                case "Program":
+                    tokenType = TokenType.instructions;
                     break;
             }
         }

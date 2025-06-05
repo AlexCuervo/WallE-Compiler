@@ -5,13 +5,14 @@ OperatorChecker opChecker = new(['+', '-', '*', '/', '=', '<', '>', '%', '|', '&
 GroupChecker groupChecker = new(['(', ')', ',', '[', ']']);
 EndInstructionChecker endInstructionChecker = new('\n');
 WhiteSpaceChecker whiteSpaceChecker = new();
-IdChecker idChecker = new(["GoTo", "Spawn", "IsColor", "DrawCircle", "DrawSquare"]);
+IdChecker idChecker = new(["Spawn", "IsColor", "DrawCircle", "DrawSquare"]);
+TextChecker textChecker = new();
 #endregion 
 
-Lexer lexer = new([noChecker, opChecker, groupChecker, whiteSpaceChecker, endInstructionChecker, idChecker]);
+Lexer lexer = new([noChecker, opChecker, groupChecker, whiteSpaceChecker, endInstructionChecker, idChecker, textChecker]);
 
 
-string code = $" alex -> Spawn(1,2,3) {'\n'} pakapaka {'\n'}";
+string code = $" Spawn(true || false){'\n'} alex -> 20-1 {'\n'} GoTo[lala](alex <= 20 + 5 - 2){'\n'} lala{'\n'}";
 
 lexer.LoadCode(code + " ");
 
@@ -23,6 +24,7 @@ GrammarSymbol Program = new("Program", null);
 GrammarSymbol I = new("Instruction", null);
 GrammarSymbol MoreInst = new("MoreInstruction", null);
 GrammarSymbol FC = new("FunctionCall", null);
+GrammarSymbol FCGoTo = new("FunctionCallGoTo", null);
 GrammarSymbol Param = new("FunctionCallParam", null);
 GrammarSymbol Params = new("FunctionCallParams", null);
 GrammarSymbol A = new("Assign", null);
@@ -49,12 +51,16 @@ GrammarSymbol mod = new("%", new(TokenType.op, "%", 0, 0));
 GrammarSymbol sum = new("+", new(TokenType.op, "+", 0, 0));
 GrammarSymbol diff = new("-", new(TokenType.op, "-", 0, 0));
 GrammarSymbol pow = new("**", new(TokenType.op, "**", 0, 0));
-GrammarSymbol groupOpn = new("(", new(TokenType.op, "(", 0, 0));
-GrammarSymbol groupCls = new(")", new(TokenType.op, ")", 0, 0));
+GrammarSymbol groupOpn = new("(", new(TokenType.group, "(", 0, 0));
+GrammarSymbol keyOpn = new("[", new(TokenType.group, "[", 0, 0));
+GrammarSymbol groupCls = new(")", new(TokenType.group, ")", 0, 0));
+GrammarSymbol keyCls = new("]", new(TokenType.group, "]", 0, 0));
 GrammarSymbol epsilon = new("/e", new(TokenType.epsilon, "epsilon", 0, 0));
 GrammarSymbol id = new("id", new(TokenType.id, "id", 0, 0));
 GrammarSymbol number = new("number", new(TokenType.number, "number", 0, 0));
 GrammarSymbol keyword = new("key", new(TokenType.keyword, "key", 0, 0));
+GrammarSymbol goTo = new("GoTo", new(TokenType.goTo, "GoTo", 0, 0));
+GrammarSymbol text = new("text", new(TokenType.text, "text", 0, 0));
 GrammarSymbol and = new("&&", new(TokenType.op, "&&", 0, 0));
 GrammarSymbol or = new("||", new(TokenType.op, "||", 0, 0));
 GrammarSymbol boolean = new("bool", new(TokenType.boolean, "bool", 0, 0));
@@ -71,9 +77,10 @@ GrammarSymbol comma = new(",", new(TokenType.group, ",", 0, 0));
 
 #region Productions
 Production Main = new(Program, [[I, MoreInst]]);
-Production Instruction = new(I, [[FC, endLine], [A, endLine], [endLine]]);
+Production Instruction = new(I, [[FC, endLine], [FCGoTo, endLine], [A, endLine], [endLine]]);
 Production MoreInstructions = new(MoreInst, [[I, MoreInst], [epsilon]]);
 Production FunctionCall = new(FC, [[keyword, groupOpn, Param, groupCls]]);
+Production FunctionCallGoTo = new(FCGoTo, [[goTo, keyOpn, id, keyCls, groupOpn, Param, groupCls]]);
 Production PFunctionCall = new(Param, [[C, Params],[epsilon]]);
 Production MoreParams = new(Params, [[comma, Param], [epsilon]]);
 Production Assign = new(A, [[id, Q]]);
@@ -89,11 +96,11 @@ Production Term = new(T, [[F, Y]]);
 Production XTerm = new(X, [[sum, T, X], [diff, T, X], [epsilon]]);
 Production Factor = new(F, [[P, M]]);
 Production YFactor = new(Y, [[mult, F, Y], [div, F, Y], [mod, F, Y], [epsilon]]);
-Production Power = new(P, [[groupOpn, C, groupCls], [number], [id], [boolean], [FC]]);
+Production Power = new(P, [[groupOpn, C, groupCls], [number], [id], [boolean], [FC], [text]]);
 Production MPower = new(M, [[pow, P, M], [epsilon]]);
 #endregion
 
-EAGrammar grammar = new([ Main, Instruction, MoreInstructions, FunctionCall, PFunctionCall, MoreParams , Assign, QAssign, AndComp, VAndComp, OrComp, ZOrComp, Bool, NBool, EA, Term, XTerm, Factor, YFactor, Power, MPower]);
+EAGrammar grammar = new([ Main, Instruction, MoreInstructions, FunctionCall, FunctionCallGoTo, PFunctionCall, MoreParams , Assign, QAssign, AndComp, VAndComp, OrComp, ZOrComp, Bool, NBool, EA, Term, XTerm, Factor, YFactor, Power, MPower]);
 #endregion
 
 Parser parser = new(grammar, lexer);
