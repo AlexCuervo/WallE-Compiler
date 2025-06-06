@@ -32,7 +32,7 @@ public static class ASTBuilder
 
         ASTBuilders[TokenType.id] = (DerivationTree node) =>
         {
-            var value = node.symbol.token!.literal;
+            var value = node.symbol.token!;
             return new Identifier(value);
         };
         ASTBuilders[TokenType.text] = (DerivationTree node) =>
@@ -43,25 +43,25 @@ public static class ASTBuilder
         ASTBuilders[TokenType.assign] = (DerivationTree node) =>
         {
             var children = node.GetChildren;
-            return new Assign(children[0].GetAST(), children[1].GetAST());
+            return new Assign(children[0].symbol.token!, children[1].GetAST());
         };
 
         ASTBuilders[TokenType.functionCall] = (DerivationTree node) =>
         {
             var children = node.GetChildren;
             if (node.GetChildren.Count() == 1)
-                return new FunctionCall(children[0].GetAST(), null);
+                return new FunctionCall(children[0].symbol.token!, null);
             else 
-                return new FunctionCall(children[0].GetAST(), children[1].GetAST());
+                return new FunctionCall(children[0].symbol.token!, children[1].GetAST());
         };
 
         ASTBuilders[TokenType.goTo] = (DerivationTree node) =>
         {
             var children = node.GetChildren;
             if (children.Count() == 2)
-                return new FunctionCallGoTo(children[0].GetAST(), children[1].GetAST(), null);
+                return new FunctionCallGoTo(children[1].symbol.token!, null);
             else if (children.Count() == 3)
-                return new FunctionCallGoTo(children[0].GetAST(), children[1].GetAST(), children[2].GetAST());
+                return new FunctionCallGoTo(children[1].symbol.token!, children[2].GetAST());
             else throw new Exception();
         };
 

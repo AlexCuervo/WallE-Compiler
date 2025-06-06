@@ -1,7 +1,9 @@
 public static class FunctionParamsModels
 {
-    public static Dictionary<string, returnType[]> paramModels = new();
-
+    static Dictionary<string, returnType[]> paramModels = new();
+    static Dictionary<string, returnType> functionReturn = new();
+    public static Dictionary<string, returnType[]> GetModels => paramModels;
+    public static Dictionary<string, returnType> GetReturn => functionReturn;
     public static void Init()
     {
         paramModels["GoTo"] = [returnType.boolean];
@@ -19,11 +21,31 @@ public static class FunctionParamsModels
         paramModels["DrawCircle"] = [returnType.number, returnType.number, returnType.number];
         paramModels["DrawRectangle"] = [returnType.number, returnType.number, returnType.number, returnType.number, returnType.number];
         paramModels["Fill"] = [];
+
+        functionReturn["GoTo"] = returnType.none;
+        functionReturn["Spawn"] = returnType.none;
+        functionReturn["Color"] = returnType.none;
+        functionReturn["Size"] = returnType.none;
+        functionReturn["DrawLine"] = returnType.none;
+        functionReturn["IsColor"] = returnType.number;
+        functionReturn["IsBrushColor"] = returnType.number;
+        functionReturn["IsBrushSize"] = returnType.number;
+        functionReturn["GetCanvasSize"] = returnType.number;
+        functionReturn["GetColorCount"] = returnType.number;
+        functionReturn["GetActualX"] = returnType.number;
+        functionReturn["GetActualY"] = returnType.number;
+        functionReturn["DrawCircle"] = returnType.none;
+        functionReturn["DrawRectangle"] = returnType.none;
+        functionReturn["Fill"] = returnType.none;
+
+
     }
+
 }
 public enum returnType
 {
     boolean,
     number,
     text,
+    none
 }

@@ -1,7 +1,7 @@
 ﻿#region AlphabetDeclaration
 
 NumberChecker noChecker = new(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
-OperatorChecker opChecker = new(['+', '-', '*', '/', '=', '<', '>', '%', '|', '&', '!'], ["||", "&&","==", "!=", "+=", "-=", "**", "<=", ">=", "+", "++", "-", "<", ">", "*", "/", "%"]);
+OperatorChecker opChecker = new(['+', '-', '*', '/', '=', '<', '>', '%', '|', '&', '!'], ["||", "&&","==", "!=", "+=", "-=", "**", "<=", ">=", "+", "-", "<", ">", "*", "/", "%"]);
 GroupChecker groupChecker = new(['(', ')', ',', '[', ']']);
 EndInstructionChecker endInstructionChecker = new('\n');
 WhiteSpaceChecker whiteSpaceChecker = new();
@@ -12,7 +12,7 @@ TextChecker textChecker = new();
 Lexer lexer = new([noChecker, opChecker, groupChecker, whiteSpaceChecker, endInstructionChecker, idChecker, textChecker]);
 
 
-string code = $" GetCanvasSize(true || false || IsColor({'"'}Green{'"'})){'\n'} alex111 <- 20-1 {'\n'} GoTo[lala](alexpapa <= 20 + 5 - 2){'\n'} lala{'\n'}";
+string code = $" alex <- 25/5{'\n'}alex1{'\n'} GoTo[alex1](1 == IsColor({'"'}Green{'"'},3,4)){'\n'}";
 
 lexer.LoadCode(code + " ");
 
@@ -126,6 +126,10 @@ ASTBuilder.Init();
 var programAST = program.GetAST();
 
 programAST.Print();
+
+System.Console.WriteLine();
+System.Console.WriteLine();
+System.Console.WriteLine();
 
 FunctionParamsModels.Init();
 

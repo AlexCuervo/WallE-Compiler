@@ -120,7 +120,7 @@ public class Parser
                 UpdateTerminal();
             }
             else if (symbol.token.type == TokenType.epsilon) break;
-            else throw new Exception("syntax error");
+            else throw new Exception($"syntax error at ({currentToken!.row},{currentToken.column})");
 
             program.AddChild(child);
             if (!isCodeRemaining) return program;
