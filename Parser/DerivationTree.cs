@@ -81,7 +81,7 @@ public class DerivationTree(List<DerivationTree> children, GrammarSymbol symbol)
 
                 if (newChild.symbol.token!.type == TokenType.op || newChild.symbol.token!.type == TokenType.assign)
                 {
-                    if (node.symbol.token == null && node.symbol.name != "MoreInstruction" && node.symbol.name != "Program"  && node.symbol.name != "FunctionCall" && node.symbol.name != "FunctionCallParam" && node.symbol.name != "FunctionCallGoTo")
+                    if (node.symbol.token == null && node.symbol.name != "MoreInstruction" && node.symbol.name != "Program" && node.symbol.name != "FunctionCall" && node.symbol.name != "FunctionCallParam" && node.symbol.name != "FunctionCallGoTo")
                     {
                         newNode.symbol = new(child.symbol.name, child.symbol.token);
                         newNode.children = [.. newNode.children, .. child.children];

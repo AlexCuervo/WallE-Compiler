@@ -5,14 +5,14 @@ OperatorChecker opChecker = new(['+', '-', '*', '/', '=', '<', '>', '%', '|', '&
 GroupChecker groupChecker = new(['(', ')', ',', '[', ']']);
 EndInstructionChecker endInstructionChecker = new('\n');
 WhiteSpaceChecker whiteSpaceChecker = new();
-IdChecker idChecker = new(["Spawn", "IsColor", "DrawCircle", "DrawSquare"]);
+IdChecker idChecker = new(["Spawn", "Size", "DrawLine", "Color", "IsColor", "IsBrushColor", "IsBrushSize", "IsCanvasColor", "DrawCircle", "DrawRectangle", "GetActualX", "GetActualY", "GetCanvasSize", "GetColorCount"]);
 TextChecker textChecker = new();
 #endregion 
 
 Lexer lexer = new([noChecker, opChecker, groupChecker, whiteSpaceChecker, endInstructionChecker, idChecker, textChecker]);
 
 
-string code = $" Spawn(true || false){'\n'} alex -> 20-1 {'\n'} GoTo[lala](alex <= 20 + 5 - 2){'\n'} lala{'\n'}";
+string code = $" GetCanvasSize(true || false || IsColor({'"'}Green{'"'})){'\n'} alex111 <- 20-1 {'\n'} GoTo[lala](alexpapa <= 20 + 5 - 2){'\n'} lala{'\n'}";
 
 lexer.LoadCode(code + " ");
 
@@ -71,7 +71,7 @@ GrammarSymbol eqLess = new("<=", new(TokenType.op, "<=", 0, 0));
 GrammarSymbol lesser = new("<", new(TokenType.op, ">", 0, 0));
 GrammarSymbol bigger = new(">", new(TokenType.op, "<", 0, 0));
 GrammarSymbol endLine = new($"{'\n'}", new(TokenType.op, $"{'\n'}", 0, 0));
-GrammarSymbol assign = new("->", new(TokenType.op, "->", 0, 0));
+GrammarSymbol assign = new("<-", new(TokenType.op, "<-", 0, 0));
 GrammarSymbol comma = new(",", new(TokenType.group, ",", 0, 0));
 #endregion
 
@@ -126,3 +126,7 @@ ASTBuilder.Init();
 var programAST = program.GetAST();
 
 programAST.Print();
+
+FunctionParamsModels.Init();
+
+System.Console.WriteLine(programAST.Check());

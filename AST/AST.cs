@@ -1,5 +1,6 @@
 public abstract class AST
 {
+    public abstract bool Check();
     public abstract void Print();
 }
 public class BinaryOp(AST left, Token op, AST right) : AST
@@ -7,6 +8,11 @@ public class BinaryOp(AST left, Token op, AST right) : AST
     public AST left = left;
     public Token op = op;
     public AST right = right;
+
+    public override bool Check()
+    {
+        throw new NotImplementedException();
+    }
 
     public override void Print()
     {
@@ -19,6 +25,11 @@ public class Number(int value) : AST
 {
     public int value = value;
 
+    public override bool Check()
+    {
+        throw new NotImplementedException();
+    }
+
     public override void Print()
     {
         System.Console.WriteLine(GetType());
@@ -28,6 +39,11 @@ public class Boolean(bool value) : AST
 {
     public bool value = value;
 
+    public override bool Check()
+    {
+        throw new NotImplementedException();
+    }
+
     public override void Print()
     {
         System.Console.WriteLine(GetType());
@@ -36,15 +52,26 @@ public class Boolean(bool value) : AST
 public class Identifier(string key) : AST
 {
     public string key = key;
+
+    public override bool Check()
+    {
+        throw new NotImplementedException();
+    }
+
     public override void Print()
     {
         System.Console.WriteLine(GetType());
     }
 }
-
 public class Text(string value) : AST
 {
-    string value = value;
+    string value = value[1..(value.Length - 1)];
+
+    public override bool Check()
+    {
+        throw new NotImplementedException();
+    }
+
     public override void Print()
     {
         System.Console.WriteLine(GetType());
@@ -53,6 +80,11 @@ public class Text(string value) : AST
 public class Key(string name) : AST
 {
     public string name = name;
+
+    public override bool Check()
+    {
+        throw new NotImplementedException();
+    }
 
     public override void Print()
     {
@@ -63,6 +95,11 @@ public class Assign(AST id, AST value) : AST
 {
     public AST id = id;
     public AST value = value;
+
+    public override bool Check()
+    {
+        throw new NotImplementedException();
+    }
 
     public override void Print()
     {
@@ -82,6 +119,12 @@ public class FunctionCall : AST
         this.key = key;
         if (param is Param p)parameters = p.parameters;
     }
+
+    public override bool Check()
+    {
+        throw new NotImplementedException();
+    }
+
     public override void Print()
     {
         System.Console.WriteLine(GetType());
@@ -103,6 +146,12 @@ public class FunctionCallGoTo : AST
 
         if (param is Param p) parameters = p.parameters;
     }
+
+    public override bool Check()
+    {
+        throw new NotImplementedException();
+    }
+
     public override void Print()
     {
         System.Console.WriteLine(GetType());
@@ -111,7 +160,6 @@ public class FunctionCallGoTo : AST
         foreach (var p in parameters) p.Print();
     }
 }
-
 public class Param : AST
 {
     public AST element;
@@ -125,6 +173,11 @@ public class Param : AST
         this.elements = elements;
 
         GetParamsList(this, parameters);
+    }
+
+    public override bool Check()
+    {
+        throw new NotImplementedException();
     }
 
     public void GetParamsList(Param node, List<AST> accumulator)
@@ -164,5 +217,10 @@ public class Instructions : AST
     {
         System.Console.WriteLine(GetType() + "   " + instructions.Count());
         foreach(var inst in instructions) inst.Print();
+    }
+
+    public override bool Check()
+    {
+        throw new NotImplementedException();
     }
 }

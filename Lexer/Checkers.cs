@@ -55,7 +55,7 @@ public class OperatorChecker : Checker
             if (!alphabet.Contains(chain[i])) return false;
         }
 
-        if (chain == "->") type = TokenType.assign;
+        if (chain == "<-") type = TokenType.assign;
         else type = TokenType.op;
 
         return true;
@@ -64,7 +64,7 @@ public class OperatorChecker : Checker
 
     public override bool Check(string chain)
     {
-        return CanProceed(chain) && (valid.Contains(chain) || chain=="->");
+        return CanProceed(chain) && (valid.Contains(chain) || chain=="<-");
     }
 
     public OperatorChecker(char[] alphabet, string[] valid)
