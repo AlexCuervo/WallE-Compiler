@@ -100,7 +100,7 @@ public class Parser
         }
         catch (KeyNotFoundException)
         {
-            throw new Exception($"syntax error at ({currentToken!.row},{currentToken.column})");
+            throw new ErrorDisplay($"syntax error at ({currentToken!.row},{currentToken.column})");
             // System.Console.WriteLine($"syntax error at ({currentToken!.row},{currentToken.column})");
             // while (currentTerminal!.token!.type != TokenType.end)
             // {
@@ -120,7 +120,7 @@ public class Parser
                 UpdateTerminal();
             }
             else if (symbol.token.type == TokenType.epsilon) break;
-            else throw new Exception($"syntax error at ({currentToken!.row},{currentToken.column})");
+            else throw new ErrorDisplay($"syntax error at ({currentToken!.row},{currentToken.column})");
 
             program.AddChild(child);
             if (!isCodeRemaining) return program;

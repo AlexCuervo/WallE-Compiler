@@ -40,10 +40,10 @@ public class Lexer(List<Checker> Checkers)
 
                     if (!proceed)
                     {
-                        System.Console.WriteLine("invalid expression");
-                        code = code[1..code.Length];
-                        codePointer = 1;
-                        column--;
+                        throw new ErrorDisplay($"invalid expression at ({row},{column - codePointer})");
+                        // code = code[1..code.Length];
+                        // codePointer = 1;
+                        // column--;
                         
                     }
                     else

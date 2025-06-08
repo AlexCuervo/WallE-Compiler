@@ -1,4 +1,3 @@
-
 public abstract class AST
 {
     public returnType returnType;
@@ -19,25 +18,24 @@ public class BinaryOp(AST left, Token op, AST right) : AST
         if (booleans.Contains(op.literal))
         {
             returnType = returnType.boolean;
-            if (left.returnType != returnType.boolean || right.returnType != returnType.boolean) throw new Exception($"({op.row},{op.column})This operation can only proceed between boolean values");
+            if (left.returnType != returnType.boolean || right.returnType != returnType.boolean) throw new ErrorDisplay($"({op.row},{op.column})This operation can only proceed between boolean values");
         }
         else if (comparations.Contains(op.literal))
         {
             returnType = returnType.boolean;
             if (op.literal == "!=" || op.literal == "==")
             {
-                if (left.returnType != right.returnType) throw new Exception($"({op.row},{op.column}) This operation can only proceed between same type of values");
+                if (left.returnType != right.returnType) throw new ErrorDisplay($"({op.row},{op.column}) This operation can only proceed between same type of values");
             }
-            else if (left.returnType != returnType.number || right.returnType != returnType.number) throw new Exception($"({op.row},{op.column})This operation can only proceed between numeric values");
+            else if (left.returnType != returnType.number || right.returnType != returnType.number) throw new ErrorDisplay($"({op.row},{op.column})This operation can only proceed between numeric values");
         }
         else
         {
             returnType = returnType.number;
-            if (left.returnType != returnType.number || right.returnType != returnType.number) throw new Exception($"({op.row},{op.column})This operation can only proceed between numeric values");
+            if (left.returnType != returnType.number || right.returnType != returnType.number) throw new ErrorDisplay($"({op.row},{op.column})This operation can only proceed between numeric values");
         }
         return true;
     }
-
     public override void Print()
     {
         System.Console.WriteLine(GetType() + "    " + op.literal);
@@ -56,45 +54,34 @@ public class Number : AST
     }
 
     public override bool Check() => true;
-
     public override void Print()
     {
         System.Console.WriteLine(GetType() + "   " + value);
     }
 }
-public class Boolean : AST
+public class Boolean : AST 
 {
     public bool value;
-
     public Boolean(bool value)
     {
         this.value = value;
         returnType = returnType.boolean;
     }
-
     public override bool Check() => true;
-
     public override void Print()
     {
         System.Console.WriteLine(GetType() + "   " + value);
     }
 }
-public class Identifier : AST
+public class Identifier(Token key) : AST 
 {
-    public Token key;
-
-    public Identifier(Token key)
-    {
-        this.key = key;
-    }
-
+    public Token key = key;
     public override bool Check()
     {
         if (Scope.GetIdMap.ContainsKey(key.literal)) returnType = Scope.GetIdMap[key.literal];
-        else throw new Exception($"({key.row},{key.column}) The local variable is undefined.");
+        else throw new ErrorDisplay($"({key.row},{key.column}) The local variable is undefined.");
         return true;
     }
-
     public override void Print()
     {
         System.Console.WriteLine(GetType() + "   " + key.literal);
@@ -109,9 +96,7 @@ public class Text : AST
         this.value = value[1..(value.Length - 1)];
         returnType = returnType.text;
     }
-
     public override bool Check() => true;
-
     public override void Print()
     {
         System.Console.WriteLine(GetType() + "  " + value);
@@ -125,7 +110,6 @@ public class Key(string name) : AST
     {
         throw new NotImplementedException();
     }
-
     public override void Print()
     {
         System.Console.WriteLine(GetType());
@@ -138,7 +122,7 @@ public class Assign(Token id, AST value) : AST
 
     public override bool Check()
     {
-        if (Scope.GetScopeMap.ContainsKey(id.literal) && !Scope.GetIdMap.ContainsKey(id.literal)) throw new Exception($"({id.row},{id.column}) The variable is already existing as a label");
+        if (Scope.GetScopeMap.ContainsKey(id.literal) && !Scope.GetIdMap.ContainsKey(id.literal)) throw new ErrorDisplay($"({id.row},{id.column}) The variable is already existing as a label");
         else
         {
             Scope.AddToScope(id.literal, value);
@@ -147,7 +131,6 @@ public class Assign(Token id, AST value) : AST
         }
         return true;
     }
-
     public override void Print()
     {
         System.Console.WriteLine(GetType());
@@ -165,24 +148,24 @@ public class FunctionCall : AST
     {
         this.key = key;
         if (param is Param p) parameters = p.parameters;
+        
     }
 
     public override bool Check()
     {
         returnType = FunctionParamsModels.GetReturn[key.literal];
         int paramCount = FunctionParamsModels.GetModels[key.literal].Length;
-        if (paramCount != parameters.Count) throw new Exception($"({key.row},{key.column}) {key.literal} method must recieve {paramCount} parameter/s instead of {parameters.Count}");
+        if (paramCount != parameters.Count) throw new ErrorDisplay($"({key.row},{key.column}) {key.literal} method must recieve {paramCount} parameter/s instead of {parameters.Count}");
         else
         {
             for (int i = 0; i < paramCount; i++)
             {
                 parameters[i].Check();
-                if (parameters[i].returnType != FunctionParamsModels.GetModels[key.literal][i]) throw new Exception($"({key.row},{key.column}) Parameter number {i + 1} must have {FunctionParamsModels.GetModels[key.literal][i]} type");
+                if (parameters[i].returnType != FunctionParamsModels.GetModels[key.literal][i]) throw new ErrorDisplay($"({key.row},{key.column}) Parameter number {i + 1} must have {FunctionParamsModels.GetModels[key.literal][i]} type");
             }
             return true;
         }
     }
-
     public override void Print()
     {
         System.Console.WriteLine(GetType());
@@ -207,25 +190,24 @@ public class FunctionCallGoTo : AST
     {
         if (Scope.GetScopeMap.ContainsKey(label.literal))
         {
-            if (Scope.GetIdMap.ContainsKey(label.literal)) throw new Exception($"({label.row},{label.column}) This label is already defined as a variable");
+            if (Scope.GetIdMap.ContainsKey(label.literal)) throw new ErrorDisplay($"({label.row},{label.column}) This label is already defined as a variable");
             else
             {
                 int paramCount = FunctionParamsModels.GetModels["GoTo"].Length;
-                if (paramCount != parameters.Count) throw new Exception($"({label.row},{label.column}) GoTo method must recieve {paramCount} parameter/s instead of {parameters.Count}");
+                if (paramCount != parameters.Count) throw new ErrorDisplay($"({label.row},{label.column}) GoTo method must recieve {paramCount} parameter/s instead of {parameters.Count}");
                 else
                 {
                     for (int i = 0; i < paramCount; i++)
                     {
                         parameters[i].Check();
-                        if (parameters[i].returnType != FunctionParamsModels.GetModels["GoTo"][i]) throw new Exception($"({label.row},{label.column}) Parameter number {i + 1} must have {FunctionParamsModels.GetModels["GoTo"][i]} type");
+                        if (parameters[i].returnType != FunctionParamsModels.GetModels["GoTo"][i]) throw new ErrorDisplay($"({label.row},{label.column}) Parameter number {i + 1} must have {FunctionParamsModels.GetModels["GoTo"][i]} type");
                     }
                     return true;
                 }
             }
         }
-        else throw new Exception($"({label.row},{label.column}) This label doesn't exist");
+        else throw new ErrorDisplay($"({label.row},{label.column}) This label doesn't exist");
     }
-
     public override void Print()
     {
         System.Console.WriteLine(GetType());
@@ -252,7 +234,6 @@ public class Param : AST
     {
         throw new NotImplementedException();
     }
-
     public void GetParamsList(Param node, List<AST> accumulator)
     {
         accumulator.Add(node.element);
@@ -269,9 +250,7 @@ public class Instructions : AST
 {
     public AST first;
     public AST after;
-
     public List<AST> instructions = [];
-
     public Instructions(AST first, AST after)
     {
         this.first = first;
@@ -279,7 +258,6 @@ public class Instructions : AST
 
         GetInstructionsList(this, instructions);
     }
-
     private void GetInstructionsList(Instructions node, List<AST> accumulator)
     {
         accumulator.Add(node.first);
@@ -291,17 +269,30 @@ public class Instructions : AST
         System.Console.WriteLine(GetType() + "   " + instructions.Count());
         foreach (var inst in instructions) inst.Print();
     }
-
     public override bool Check()
     {
         foreach (var child in instructions)
         {
-            if (child is Identifier id) Scope.AddToScope(id.key.literal, id);
+            if (child is Identifier id)
+            {
+                Scope.AddToScope(id.key.literal, id);
+            }
         }
 
-        foreach (var child in instructions)
+        for(int i = 0; i < instructions.Count; i++)
         {
-            if (child is not Identifier) child.Check();
+            if (instructions[i] is not Identifier)
+            {
+                if (instructions[i] is FunctionCall functionCall && functionCall.key.literal == "Spawn" && i != 0)
+                {
+                    throw new ErrorDisplay($"({functionCall.key.row},{functionCall.key.column}) Only one call to 'Spawn' function is supported");
+                }
+                else if ((!(instructions[i] is FunctionCall) || (instructions[i] is FunctionCall function && function.key.literal != "Spawn")) && i == 0)
+                {
+                    throw new ErrorDisplay($"Code must start with 'Spawn' method");
+                }
+                instructions[i].Check();
+            }
         }
 
         return true;

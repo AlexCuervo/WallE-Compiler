@@ -1,7 +1,7 @@
 ﻿#region AlphabetDeclaration
 
 NumberChecker noChecker = new(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
-OperatorChecker opChecker = new(['+', '-', '*', '/', '=', '<', '>', '%', '|', '&', '!'], ["||", "&&","==", "!=", "+=", "-=", "**", "<=", ">=", "+", "-", "<", ">", "*", "/", "%"]);
+OperatorChecker opChecker = new(['+', '-', '*', '/', '=', '<', '>', '%', '|', '&', '!'], ["||", "&&", "==", "!=", "**", "<=", ">=", "+", "-", "<", ">", "*", "/", "%"]);
 GroupChecker groupChecker = new(['(', ')', ',', '[', ']']);
 EndInstructionChecker endInstructionChecker = new('\n');
 WhiteSpaceChecker whiteSpaceChecker = new();
@@ -10,9 +10,22 @@ TextChecker textChecker = new();
 #endregion 
 
 Lexer lexer = new([noChecker, opChecker, groupChecker, whiteSpaceChecker, endInstructionChecker, idChecker, textChecker]);
+#region UI
 
+string code = $"{'\n'}Spawn(0,2){'\n'} Spawn(1,2){'\n'}Color({'"'}Black{'"'}){'\n'} n <- 5{'\n'} k <- 3+3 * 10{'\n'} n <- k - n * 2{'\n'} actual-x <- GetActualX(){'\n'} i <- 0{'\n'} loop-1{'\n'} DrawLine(1,0,1){'\n'} i <- i + 1 {'\n'} is-brush-color-blue <- IsBrushColor({'"'}Blue{'"'}){'\n'} GoTo[loop-ends-here](is-brush-color-blue == 1){'\n'}{'\n'}{'\n'} GoTo[loop-1](i < 10){'\n'} Color({'"'}Blue{'"'}){'\n'} GoTo[loop-1](true){'\n'}{'\n'}{'\n'}loop-ends-here{'\n'}";
+int size = 5;
+string[,] canvas = new string[size, size];
+int[] wallE = new int[2];
 
-string code = $" alex <- 25/5{'\n'}alex1{'\n'} GoTo[alex1](1 == IsColor({'"'}Green{'"'},3,4)){'\n'}";
+for (int i = 0; i < size; i++)
+{
+    for (int j = 0; j < size; j++)
+    {
+        canvas[i, j] = "White";
+    }
+}
+
+#endregion
 
 lexer.LoadCode(code + " ");
 
@@ -81,7 +94,7 @@ Production Instruction = new(I, [[FC, endLine], [FCGoTo, endLine], [A, endLine],
 Production MoreInstructions = new(MoreInst, [[I, MoreInst], [epsilon]]);
 Production FunctionCall = new(FC, [[keyword, groupOpn, Param, groupCls]]);
 Production FunctionCallGoTo = new(FCGoTo, [[goTo, keyOpn, id, keyCls, groupOpn, Param, groupCls]]);
-Production PFunctionCall = new(Param, [[C, Params],[epsilon]]);
+Production PFunctionCall = new(Param, [[C, Params], [epsilon]]);
 Production MoreParams = new(Params, [[comma, Param], [epsilon]]);
 Production Assign = new(A, [[id, Q]]);
 Production QAssign = new(Q, [[assign, C], [epsilon]]);
@@ -90,7 +103,7 @@ Production VAndComp = new(V, [[and, O, V], [epsilon]]);
 Production OrComp = new(O, [[B, Z]]);
 Production ZOrComp = new(Z, [[or, B, Z], [epsilon]]);
 Production Bool = new(B, [[E, N]]);
-Production NBool = new(N, [[equal, E, N], [notEqual, E, N], [bigger, E, N], [lesser, E, N], [eqBig, E, N], [eqLess, E, N], [epsilon]]); 
+Production NBool = new(N, [[equal, E, N], [notEqual, E, N], [bigger, E, N], [lesser, E, N], [eqBig, E, N], [eqLess, E, N], [epsilon]]);
 Production EA = new(E, [[T, X]]);
 Production Term = new(T, [[F, Y]]);
 Production XTerm = new(X, [[sum, T, X], [diff, T, X], [epsilon]]);
@@ -100,37 +113,56 @@ Production Power = new(P, [[groupOpn, C, groupCls], [number], [id], [boolean], [
 Production MPower = new(M, [[pow, P, M], [epsilon]]);
 #endregion
 
-EAGrammar grammar = new([ Main, Instruction, MoreInstructions, FunctionCall, FunctionCallGoTo, PFunctionCall, MoreParams , Assign, QAssign, AndComp, VAndComp, OrComp, ZOrComp, Bool, NBool, EA, Term, XTerm, Factor, YFactor, Power, MPower]);
+EAGrammar grammar = new([Main, Instruction, MoreInstructions, FunctionCall, FunctionCallGoTo, PFunctionCall, MoreParams, Assign, QAssign, AndComp, VAndComp, OrComp, ZOrComp, Bool, NBool, EA, Term, XTerm, Factor, YFactor, Power, MPower]);
 #endregion
 
 Parser parser = new(grammar, lexer);
 
-DerivationTree program = parser.Parse(grammar.GetProductions[0].GetSymbol);
+DerivationTree program = new([], new("", null));
+try
+{
+    program = parser.Parse(grammar.GetProductions[0].GetSymbol);
+}
+catch (ErrorDisplay error)
+{
+    throw new Exception(error.getMessage);
+}
 
-program.Print();
+// program.Print();
 
-System.Console.WriteLine();
-System.Console.WriteLine();
-System.Console.WriteLine();
+// System.Console.WriteLine();
+// System.Console.WriteLine();
+// System.Console.WriteLine();
 
 program = program.Optimize(program);
 
-program.Print();
+// program.Print();
 
-System.Console.WriteLine();
-System.Console.WriteLine();
-System.Console.WriteLine();
+// System.Console.WriteLine();
+// System.Console.WriteLine();
+// System.Console.WriteLine();
 
 ASTBuilder.Init();
 
 var programAST = program.GetAST();
 
+
+// System.Console.WriteLine();
+// System.Console.WriteLine();
+// System.Console.WriteLine();
+
+FunctionParamsModels.Init();
+bool check = false;
+try
+{
+    check = programAST.Check();
+}
+catch (ErrorDisplay error)
+{
+    throw new Exception(error.getMessage);
+}
 programAST.Print();
 
 System.Console.WriteLine();
 System.Console.WriteLine();
-System.Console.WriteLine();
-
-FunctionParamsModels.Init();
-
-System.Console.WriteLine(programAST.Check());
+System.Console.WriteLine(check);
