@@ -7,6 +7,8 @@ public partial class Form1 : Form
     private TextEditor inputTextBox = new();
     private Button submitButton = new();
     private CanvasManager canvas = new();
+    private Button exportButton = new Button();
+    private Button importButton = new Button();
     public Form1()
     {
         InitializeCustomComponents();
@@ -36,10 +38,62 @@ public partial class Form1 : Form
 
         submitButton.Click += OnSubmitClicked!;
 
+        exportButton = new Button
+        {
+            Text = "Exportar (.gw)",
+            Location = new Point(450, 850),
+            Size = new Size(120, 30)
+        };
+
+        exportButton.Click += ExportButton_Click!;
+
+        importButton = new Button
+        {
+            Text = "Importar (.gw)",
+            Location = new Point(250, 850),
+            Size = new Size(120, 30)
+        };
+
+        importButton.Click += ImportButton_Click!;
+
         Controls.Add(inputTextBox);
         Controls.Add(submitButton);
+        Controls.Add(importButton);
+        Controls.Add(exportButton);
+    }
+    void ExportButton_Click(object sender, EventArgs e)
+    {
+        // Abrir un diálogo de guardar para crear un nuevo archivo con extensión .gw
+        using SaveFileDialog saveFileDialog = new();
+        saveFileDialog.Filter = "Archivos GW (*.gw)|*.gw|Todos los archivos (*.*)|*.*";
+        saveFileDialog.DefaultExt = "gw";
+        saveFileDialog.Title = "Guardar contenido como archivo .gw";
 
+        if (saveFileDialog.ShowDialog() == DialogResult.OK)
+        {
+            File.WriteAllText(saveFileDialog.FileName, inputTextBox.getUserCode);
+            MessageBox.Show("Exportación realizada correctamente.", "Exportar", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+    }
+    private void ImportButton_Click(object sender, EventArgs e)
+    {
+        using OpenFileDialog openFileDialog = new OpenFileDialog();
+        openFileDialog.Filter = "Archivos GW (*.gw)|*.gw|Todos los archivos (*.*)|*.*";
+        openFileDialog.Title = "Selecciona un archivo .gw para cargar";
 
+        if (openFileDialog.ShowDialog() == DialogResult.OK)
+        {
+            try
+            {
+                string content = File.ReadAllText(openFileDialog.FileName);
+                inputTextBox.SetUserCode(content);
+                MessageBox.Show("Archivo cargado correctamente.", "Importar", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar el archivo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 
     void OnSubmitClicked(object sender, EventArgs e)

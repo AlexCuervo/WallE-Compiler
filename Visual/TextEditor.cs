@@ -5,6 +5,11 @@ public partial class TextEditor : UserControl
     public string? getUserCode => userCode;
     private Panel panelLineas = new();
 
+    public void SetUserCode(string newCode)
+    {
+        userCode = newCode;
+        inputTextBox.Text = newCode;
+    }
     public TextEditor()
     {
         CreateInputControls();
