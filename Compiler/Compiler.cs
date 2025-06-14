@@ -14,7 +14,7 @@ public static class Compiler
         GroupChecker groupChecker = new(['(', ')', ',', '[', ']']);
         EndInstructionChecker endInstructionChecker = new('\n');
         WhiteSpaceChecker whiteSpaceChecker = new();
-        IdChecker idChecker = new(["Spawn", "Move", "Size", "DrawLine", "Color", "IsBrushColor", "IsBrushSize", "IsCanvasColor", "DrawCircle", "DrawRectangle", "GetActualX", "GetActualY", "GetCanvasSize", "GetColorCount"]);
+        IdChecker idChecker = new(["Spawn", "Move", "Size", "DrawLine", "Color", "IsBrushColor", "IsBrushSize", "IsCanvasColor", "Fill","DrawCircle", "DrawRectangle", "GetActualX", "GetActualY", "GetCanvasSize", "GetColorCount"]);
         TextChecker textChecker = new();
         #endregion
 

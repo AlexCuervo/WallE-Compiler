@@ -63,7 +63,6 @@ public partial class Form1 : Form
     }
     void ExportButton_Click(object sender, EventArgs e)
     {
-        // Abrir un diálogo de guardar para crear un nuevo archivo con extensión .gw
         using SaveFileDialog saveFileDialog = new();
         saveFileDialog.Filter = "Archivos GW (*.gw)|*.gw|Todos los archivos (*.*)|*.*";
         saveFileDialog.DefaultExt = "gw";
@@ -125,6 +124,7 @@ public partial class Form1 : Form
             try
             {
                 ASTExecutor.Execute(Compiler.programAST);
+                canvas.UpdateHighlightedCell();
             }
             catch (ErrorDisplay error)
             {
@@ -132,10 +132,6 @@ public partial class Form1 : Form
             }
 
         }
-
-
-
-        canvas.UpdateHighlightedCell();
     }
 
     void CreateCanvasControls()

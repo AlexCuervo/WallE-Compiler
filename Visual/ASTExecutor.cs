@@ -56,8 +56,10 @@ public static class ASTExecutor
                 case "*":
                     return (int)Execute(op.left) * (int)Execute(op.right);
                 case "/":
+                    if ((int)Execute(op.right) == 0) throw new ErrorDisplay($"({op.op.row}, {op.op.column}) Invalid operation. Attempted to divide by zero.");
                     return (int)Execute(op.left) / (int)Execute(op.right);
                 case "%":
+                    if ((int)Execute(op.right) == 0) throw new ErrorDisplay($"({op.op.row}, {op.op.column}) Invalid operation. Attempted to divide by zero.");
                     return (int)Execute(op.left) % (int)Execute(op.right);
                 case "**":
                     return Math.Pow((int)Execute(op.left), (int)Execute(op.right));

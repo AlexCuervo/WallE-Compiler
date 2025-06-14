@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\cuervo\\PROGRAMMING\\STUDY\\Compiler\\WallE-Compiler.csproj": {}
+    "C:\\cuervo\\PROGRAMMING\\PROJECTS\\WINDOWS FORM\\WallE-Compiler\\WallE-Compiler.csproj": {}
   },
   "projects": {
-    "C:\\cuervo\\PROGRAMMING\\STUDY\\Compiler\\WallE-Compiler.csproj": {
+    "C:\\cuervo\\PROGRAMMING\\PROJECTS\\WINDOWS FORM\\WallE-Compiler\\WallE-Compiler.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\cuervo\\PROGRAMMING\\STUDY\\Compiler\\WallE-Compiler.csproj",
+        "projectUniqueName": "C:\\cuervo\\PROGRAMMING\\PROJECTS\\WINDOWS FORM\\WallE-Compiler\\WallE-Compiler.csproj",
         "projectName": "WallE-Compiler",
-        "projectPath": "C:\\cuervo\\PROGRAMMING\\STUDY\\Compiler\\WallE-Compiler.csproj",
+        "projectPath": "C:\\cuervo\\PROGRAMMING\\PROJECTS\\WINDOWS FORM\\WallE-Compiler\\WallE-Compiler.csproj",
         "packagesPath": "C:\\Users\\alexc\\.nuget\\packages\\",
-        "outputPath": "C:\\cuervo\\PROGRAMMING\\STUDY\\Compiler\\obj\\",
+        "outputPath": "C:\\cuervo\\PROGRAMMING\\PROJECTS\\WINDOWS FORM\\WallE-Compiler\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
