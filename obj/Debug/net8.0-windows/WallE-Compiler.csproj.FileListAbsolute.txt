@@ -12,3 +12,18 @@ C:\cuervo\PROGRAMMING\PROJECTS\WINDOWS FORM\WallE-Compiler\obj\Debug\net8.0-wind
 C:\cuervo\PROGRAMMING\PROJECTS\WINDOWS FORM\WallE-Compiler\obj\Debug\net8.0-windows\WallE-Compiler.pdb
 C:\cuervo\PROGRAMMING\PROJECTS\WINDOWS FORM\WallE-Compiler\obj\Debug\net8.0-windows\WallE-Compiler.genruntimeconfig.cache
 C:\cuervo\PROGRAMMING\PROJECTS\WINDOWS FORM\WallE-Compiler\obj\Debug\net8.0-windows\ref\WallE-Compiler.dll
+C:\cuervo\PROGRAMMING\STUDY\Compiler\bin\Debug\net8.0-windows\WallE-Compiler.exe
+C:\cuervo\PROGRAMMING\STUDY\Compiler\bin\Debug\net8.0-windows\WallE-Compiler.deps.json
+C:\cuervo\PROGRAMMING\STUDY\Compiler\bin\Debug\net8.0-windows\WallE-Compiler.runtimeconfig.json
+C:\cuervo\PROGRAMMING\STUDY\Compiler\bin\Debug\net8.0-windows\WallE-Compiler.dll
+C:\cuervo\PROGRAMMING\STUDY\Compiler\bin\Debug\net8.0-windows\WallE-Compiler.pdb
+C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0-windows\WallE-Compiler.GeneratedMSBuildEditorConfig.editorconfig
+C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0-windows\WallE-Compiler.AssemblyInfoInputs.cache
+C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0-windows\WallE-Compiler.AssemblyInfo.cs
+C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0-windows\WallE-Compiler.csproj.CoreCompileInputs.cache
+C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0-windows\WallE-Compiler.sourcelink.json
+C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0-windows\WallE-Compiler.dll
+C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0-windows\refint\WallE-Compiler.dll
+C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0-windows\WallE-Compiler.pdb
+C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0-windows\WallE-Compiler.genruntimeconfig.cache
+C:\cuervo\PROGRAMMING\STUDY\Compiler\obj\Debug\net8.0-windows\ref\WallE-Compiler.dll
