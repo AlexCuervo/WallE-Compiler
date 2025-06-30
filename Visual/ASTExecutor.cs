@@ -36,10 +36,10 @@ public static class ASTExecutor
                 case "&&":
                     return (bool)Execute(op.left) && (bool)Execute(op.right);
                 case "==":
-                    bool value = Equals(Execute(op.left),Execute(op.right));
+                    bool value = Equals(Execute(op.left), Execute(op.right));
                     return value;
                 case "!=":
-                    value = !Equals(Execute(op.left),Execute(op.right));
+                    value = !Equals(Execute(op.left), Execute(op.right));
                     return value;
                 case "<=":
                     return (int)Execute(op.left) <= (int)Execute(op.right);
@@ -145,7 +145,57 @@ public static class ASTExecutor
                             default: throw new ErrorDisplay($"({function.key.row}, {function.key.column}) Invalid Color parameter");
                         }
                     }
+                    else if (function.parameters[0] is Identifier identifier)
+                    {
+                        switch (variables[identifier.key.literal])
+                        {
+                            case "White":
+                                canvas.actualColor = Color.White;
+                                return "none";
+                            case "Black":
+                                canvas.actualColor = Color.Black;
+                                return "none";
+                            case "Green":
+                                canvas.actualColor = Color.Green;
+                                return "none";
+                            case "Blue":
+                                canvas.actualColor = Color.Blue;
+                                return "none";
+                            case "Yellow":
+                                canvas.actualColor = Color.Yellow;
+                                return "none";
+                            case "Red":
+                                canvas.actualColor = Color.Red;
+                                return "none";
+                            case "Violet":
+                                canvas.actualColor = Color.Violet;
+                                return "none";
+                            case "Orange":
+                                canvas.actualColor = Color.Orange;
+                                return "none";
+                            case "Pink":
+                                canvas.actualColor = Color.Pink;
+                                return "none";
+                            case "DarkGreen":
+                                canvas.actualColor = Color.DarkGreen;
+                                return "none";
+                            case "DarkViolet":
+                                canvas.actualColor = Color.DarkViolet;
+                                return "none";
+                            case "DarkRed":
+                                canvas.actualColor = Color.DarkRed;
+                                return "none";
+                            case "DarkBlue":
+                                canvas.actualColor = Color.DarkBlue;
+                                return "none";
+                            case "Brown":
+                                canvas.actualColor = Color.Brown;
+                                return "none";
+                            default: throw new ErrorDisplay($"({function.key.row}, {function.key.column}) Invalid Color parameter");
+                        }
+                    }
                     else return "none";
+
                 case "IsCanvasColor":
                     if (function.parameters[0] is Text key)
                     {

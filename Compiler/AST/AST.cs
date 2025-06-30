@@ -18,21 +18,21 @@ public class BinaryOp(AST left, Token op, AST right) : AST
         if (booleans.Contains(op.literal))
         {
             returnType = returnType.boolean;
-            if (left.returnType != returnType.boolean || right.returnType != returnType.boolean) throw new ErrorDisplay($"({op.row},{op.column})This operation can only proceed between boolean values");
+            if (left.returnType != returnType.boolean || right.returnType != returnType.boolean) Scope.errors.Enqueue($"({op.row},{op.column})This operation can only proceed between boolean values");
         }
         else if (comparations.Contains(op.literal))
         {
             returnType = returnType.boolean;
             if (op.literal == "!=" || op.literal == "==")
             {
-                if (left.returnType != right.returnType) throw new ErrorDisplay($"({op.row},{op.column}) This operation can only proceed between same type of values");
+                if (left.returnType != right.returnType) Scope.errors.Enqueue($"({op.row},{op.column}) This operation can only proceed between same type of values");
             }
-            else if (left.returnType != returnType.number || right.returnType != returnType.number) throw new ErrorDisplay($"({op.row},{op.column})This operation can only proceed between numeric values");
+            else if (left.returnType != returnType.number || right.returnType != returnType.number) Scope.errors.Enqueue($"({op.row},{op.column})This operation can only proceed between numeric values");
         }
         else
         {
             returnType = returnType.number;
-            if (left.returnType != returnType.number || right.returnType != returnType.number) throw new ErrorDisplay($"({op.row},{op.column})This operation can only proceed between numeric values");
+            if (left.returnType != returnType.number || right.returnType != returnType.number) Scope.errors.Enqueue($"({op.row},{op.column})This operation can only proceed between numeric values");
         }
         return true;
     }
@@ -59,7 +59,7 @@ public class Number : AST
         System.Console.WriteLine(GetType() + "   " + value);
     }
 }
-public class Boolean : AST 
+public class Boolean : AST
 {
     public bool value;
     public Boolean(bool value)
@@ -73,13 +73,13 @@ public class Boolean : AST
         System.Console.WriteLine(GetType() + "   " + value);
     }
 }
-public class Identifier(Token key) : AST 
+public class Identifier(Token key) : AST
 {
     public Token key = key;
     public override bool Check()
     {
         if (Scope.GetIdMap.ContainsKey(key.literal)) returnType = Scope.GetIdMap[key.literal];
-        else throw new ErrorDisplay($"({key.row},{key.column}) The local variable is undefined.");
+        else Scope.errors.Enqueue($"({key.row},{key.column}) The local variable is undefined.");
         return true;
     }
     public override void Print()
@@ -122,7 +122,7 @@ public class Assign(Token id, AST value) : AST
 
     public override bool Check()
     {
-        if (Scope.GetScopeMap.ContainsKey(id.literal) && !Scope.GetIdMap.ContainsKey(id.literal)) throw new ErrorDisplay($"({id.row},{id.column}) The variable is already existing as a label");
+        if (Scope.GetScopeMap.ContainsKey(id.literal) && !Scope.GetIdMap.ContainsKey(id.literal)) Scope.errors.Enqueue($"({id.row},{id.column}) The variable is already existing as a label");
         else
         {
             Scope.AddToScope(id.literal, value);
@@ -148,23 +148,23 @@ public class FunctionCall : AST
     {
         this.key = key;
         if (param is Param p) parameters = p.parameters;
-        
+
     }
 
     public override bool Check()
     {
         returnType = FunctionParamsModels.GetReturn[key.literal];
         int paramCount = FunctionParamsModels.GetModels[key.literal].Length;
-        if (paramCount != parameters.Count) throw new ErrorDisplay($"({key.row},{key.column}) {key.literal} method must recieve {paramCount} parameter/s instead of {parameters.Count}");
+        if (paramCount != parameters.Count) Scope.errors.Enqueue($"({key.row},{key.column}) {key.literal} method must recieve {paramCount} parameter/s instead of {parameters.Count}");
         else
         {
             for (int i = 0; i < paramCount; i++)
             {
                 parameters[i].Check();
-                if (parameters[i].returnType != FunctionParamsModels.GetModels[key.literal][i]) throw new ErrorDisplay($"({key.row},{key.column}) Parameter number {i + 1} must have {FunctionParamsModels.GetModels[key.literal][i]} type");
+                if (parameters[i].returnType != FunctionParamsModels.GetModels[key.literal][i]) Scope.errors.Enqueue($"({key.row},{key.column}) Parameter number {i + 1} must have {FunctionParamsModels.GetModels[key.literal][i]} type");
             }
-            return true;
         }
+        return true;
     }
     public override void Print()
     {
@@ -190,23 +190,23 @@ public class FunctionCallGoTo : AST
     {
         if (Scope.GetScopeMap.ContainsKey(label.literal))
         {
-            if (Scope.GetIdMap.ContainsKey(label.literal)) throw new ErrorDisplay($"({label.row},{label.column}) This label is already defined as a variable");
+            if (Scope.GetIdMap.ContainsKey(label.literal)) Scope.errors.Enqueue($"({label.row},{label.column}) This label is already defined as a variable");
             else
             {
                 int paramCount = FunctionParamsModels.GetModels["GoTo"].Length;
-                if (paramCount != parameters.Count) throw new ErrorDisplay($"({label.row},{label.column}) GoTo method must recieve {paramCount} parameter/s instead of {parameters.Count}");
+                if (paramCount != parameters.Count) Scope.errors.Enqueue($"({label.row},{label.column}) GoTo method must recieve {paramCount} parameter/s instead of {parameters.Count}");
                 else
                 {
                     for (int i = 0; i < paramCount; i++)
                     {
                         parameters[i].Check();
-                        if (parameters[i].returnType != FunctionParamsModels.GetModels["GoTo"][i]) throw new ErrorDisplay($"({label.row},{label.column}) Parameter number {i + 1} must have {FunctionParamsModels.GetModels["GoTo"][i]} type");
+                        if (parameters[i].returnType != FunctionParamsModels.GetModels["GoTo"][i]) Scope.errors.Enqueue($"({label.row},{label.column}) Parameter number {i + 1} must have {FunctionParamsModels.GetModels["GoTo"][i]} type");
                     }
-                    return true;
                 }
             }
         }
-        else throw new ErrorDisplay($"({label.row},{label.column}) This label doesn't exist");
+        else Scope.errors.Enqueue($"({label.row},{label.column}) This label doesn't exist");
+        return true;
     }
     public override void Print()
     {
@@ -276,23 +276,29 @@ public class Instructions : AST
         {
             if (child is Identifier id)
             {
-                if (Scope.GetScopeMap.ContainsKey(id.key.literal)) throw new ErrorDisplay($"({id.key.row}, {id.key.column}) The specified label already exists");
-                Scope.AddToScope(id.key.literal, id);
-                ASTExecutor.AddLabel(id.key.literal, id);
+                if (Scope.GetScopeMap.ContainsKey(id.key.literal))
+                {
+                    Scope.errors.Enqueue($"({id.key.row}, {id.key.column}) The specified label already exists");
+                }
+                else
+                {
+                    Scope.AddToScope(id.key.literal, id);
+                    ASTExecutor.AddLabel(id.key.literal, id);
+                }
             }
         }
 
-        for(int i = 0; i < instructions.Count; i++)
+        for (int i = 0; i < instructions.Count; i++)
         {
             if (instructions[i] is not Identifier)
             {
                 if (instructions[i] is FunctionCall functionCall && functionCall.key.literal == "Spawn" && i != 0)
                 {
-                    throw new ErrorDisplay($"({functionCall.key.row},{functionCall.key.column}) Only one call to 'Spawn' function is supported");
+                    Scope.errors.Enqueue($"({functionCall.key.row},{functionCall.key.column}) Only one call to 'Spawn' function is supported");
                 }
                 else if ((instructions[i] is not FunctionCall || (instructions[i] is FunctionCall function && function.key.literal != "Spawn")) && i == 0)
                 {
-                    throw new ErrorDisplay($"Code must start with 'Spawn' method");
+                    Scope.errors.Enqueue($"Code must start with 'Spawn' method");
                 }
                 instructions[i].Check();
             }

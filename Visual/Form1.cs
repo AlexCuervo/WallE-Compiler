@@ -18,7 +18,7 @@ public partial class Form1 : Form
     {
         ClientSize = new Size(1920, 1080);
         Text = "Wall-E Compiler";
-
+        BackColor = Color.DarkSlateBlue;
         CreateInputControls();
         CreateCanvasControls();
     }
@@ -33,25 +33,31 @@ public partial class Form1 : Form
         {
             Text = "Run",
             Location = new Point(40, 850),
-            Size = new Size(150, 30)
+            Size = new Size(150, 30),
+            FlatStyle = FlatStyle.Flat,
+            ForeColor = Color.LightCyan
         };
 
         submitButton.Click += OnSubmitClicked!;
 
         exportButton = new Button
         {
-            Text = "Exportar (.gw)",
+            Text = "Export",
             Location = new Point(450, 850),
-            Size = new Size(120, 30)
+            Size = new Size(120, 30),
+            FlatStyle = FlatStyle.Flat,
+            ForeColor = Color.LightCyan
         };
 
         exportButton.Click += ExportButton_Click!;
 
         importButton = new Button
         {
-            Text = "Importar (.gw)",
+            Text = "Import",
             Location = new Point(250, 850),
-            Size = new Size(120, 30)
+            Size = new Size(120, 30),
+            FlatStyle = FlatStyle.Flat,
+            ForeColor = Color.LightCyan
         };
 
         importButton.Click += ImportButton_Click!;

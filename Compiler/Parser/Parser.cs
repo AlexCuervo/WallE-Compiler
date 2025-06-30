@@ -7,6 +7,7 @@ public class Parser
     Production currentProduction;
     GrammarSymbol? currentTerminal;
     bool isCodeRemaining = true;
+    DerivationTree Program = new([], new("", null));
 
     public Parser(EAGrammar grammar, Lexer lexer)
     {
@@ -102,7 +103,13 @@ public class Parser
         }
 
     }
+
     public DerivationTree Parse(GrammarSymbol Expression)
+    {
+        Program = ParseRecursion(Expression);
+        return Program;
+    }
+    public DerivationTree ParseRecursion(GrammarSymbol Expression)
     {
         DerivationTree program = new([], new(Expression.name, null));
         try
@@ -111,25 +118,33 @@ public class Parser
         }
         catch (KeyNotFoundException)
         {
-            throw new ErrorDisplay($"syntax error at ({currentToken!.row},{currentToken.column})");
-            // System.Console.WriteLine($"syntax error at ({currentToken!.row},{currentToken.column})");
-            // while (currentTerminal!.token!.type != TokenType.end)
-            // {
-            //     UpdateTerminal();
-            // }
+            Scope.errors.Enqueue($"({currentTerminal!.token!.row},{currentTerminal.token.column}) syntax error");
+            while (currentTerminal!.token!.type != TokenType.end && isCodeRemaining)
+            {
+                UpdateTerminal();
+            }
+            Program.AddChild(ParseRecursion(grammar.GetProductions[0].GetSymbol));
         }
 
         foreach (var symbol in currentProduction.GetDerivations[0])
         {
             DerivationTree child = new([], new(symbol.name, symbol.token));
-            if (symbol.token == null) child = Parse(symbol);
+            if (symbol.token == null) child = ParseRecursion(symbol);
             else if (symbol.name == currentTerminal!.name)
             {
                 if (child.symbol.token!.literal.Length != 0) child.symbol.token = new(currentTerminal.token!.type, currentTerminal.token.literal, currentTerminal.token.row, currentTerminal.token.column);
                 UpdateTerminal();
             }
             else if (symbol.token.type == TokenType.epsilon) break;
-            else throw new ErrorDisplay($"syntax error at ({currentToken!.row},{currentToken.column})");
+            else
+            {
+                Scope.errors.Enqueue($"({currentTerminal.token!.row}, {currentTerminal.token!.column}) syntax error {symbol.token.literal}");
+                while (currentTerminal!.token!.type != TokenType.end && isCodeRemaining)
+                {
+                    UpdateTerminal();
+                }
+                Program.AddChild(ParseRecursion(grammar.GetProductions[0].GetSymbol));
+            }
 
             program.AddChild(child);
             if (!isCodeRemaining) return program;

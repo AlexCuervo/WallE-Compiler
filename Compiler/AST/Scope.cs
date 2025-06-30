@@ -4,6 +4,7 @@ public static class Scope
     static Dictionary<string, returnType> idMap = [];
     public static Dictionary<string, returnType> GetIdMap => idMap;
     public static Dictionary<string, AST> GetScopeMap => scope;
+    public static Queue<string> errors = [];
 
 
     public static void AddIdentifierReturn(string id, returnType returnType)

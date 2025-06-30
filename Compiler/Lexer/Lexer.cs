@@ -40,11 +40,11 @@ public class Lexer(List<Checker> Checkers)
 
                     if (!proceed)
                     {
-                        throw new ErrorDisplay($"invalid expression at ({row},{column - codePointer})");
-                        // code = code[1..code.Length];
-                        // codePointer = 1;
-                        // column--;
-                        
+                        code = code[1..code.Length];
+                        int offset = codePointer - 1;
+                        codePointer = 1;
+                        column--;
+                        yield return new(TokenType.error, code[0..(codePointer - 1)], row, column - offset);
                     }
                     else
                     {

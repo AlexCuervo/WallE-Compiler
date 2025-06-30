@@ -14,7 +14,7 @@ public static class Compiler
         GroupChecker groupChecker = new(['(', ')', ',', '[', ']']);
         EndInstructionChecker endInstructionChecker = new('\n');
         WhiteSpaceChecker whiteSpaceChecker = new();
-        IdChecker idChecker = new(["Spawn", "Move", "Size", "DrawLine", "Color", "IsBrushColor", "IsBrushSize", "IsCanvasColor", "Fill","DrawCircle", "DrawRectangle", "GetActualX", "GetActualY", "GetCanvasSize", "GetColorCount"]);
+        IdChecker idChecker = new(["Spawn", "Move", "Size", "DrawLine", "Color", "IsBrushColor", "IsBrushSize", "IsCanvasColor", "Fill", "DrawCircle", "DrawRectangle", "GetActualX", "GetActualY", "GetCanvasSize", "GetColorCount"]);
         TextChecker textChecker = new();
         #endregion
 
@@ -145,6 +145,14 @@ public static class Compiler
             return;
         }
 
+        if (Scope.errors.Count != 0)
+        {
+            string message = "";
+            while (Scope.errors.Count != 0) message += Scope.errors.Dequeue() + '\n';
+            MessageBox.Show(message);
+            return;
+        }
+
         program = program.Optimize(program);
 
         if (program.GetChildren.Count == 0)
@@ -166,17 +174,16 @@ public static class Compiler
 
         FunctionParamsModels.Init();
 
-        check = false;
-        try
+        programAST.Check();
+
+        if (Scope.errors.Count != 0)
         {
-            check = programAST.Check();
-        }
-        catch (ErrorDisplay error)
-        {
-            MessageBox.Show(error.getMessage);
+            string message = "";
+            while (Scope.errors.Count != 0) message += Scope.errors.Dequeue() + '\n';
+            MessageBox.Show(message);
             return;
         }
-        
+        else check = true;
 
     }
 }

@@ -44,7 +44,9 @@ public class CanvasManager
             Maximum = 50,
             Value = 5,
             Location = new Point(750, 860),
-            Size = new Size(100, 20)
+            Size = new Size(100, 20),
+            BackColor = Color.DarkSlateBlue,
+            ForeColor = Color.LightCyan
         };
 
 
